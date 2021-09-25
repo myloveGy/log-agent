@@ -18,7 +18,7 @@ func MongoConnect(ctx context.Context, conf config.MongoDBConfig) (*mongo.Client
 		return nil, err
 	}
 
-	if err := client.Ping(context.Background(), nil); err != nil {
+	if err := client.Ping(ctx, nil); err != nil {
 		return nil, err
 	}
 
