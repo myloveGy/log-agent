@@ -11,11 +11,21 @@ import (
 )
 
 func MongoConnect(ctx context.Context, conf config.MongoDBConfig) (*mongo.Client, error) {
+	// 设置了登录的账号和密码
+	loginAuth := ""
+	if conf.Username != "" && conf.Password != "" {
+		loginAuth = fmt.Sprintf("%s:%s@", conf.Username, conf.Password)
+	}
+
 	// 连接mongo db
-	clientOptions := options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%d", conf.Host, conf.Port))
+	clientOptions := options.Client().ApplyURI(fmt.Sprintf("mongodb://%s%s:%d", loginAuth, conf.Host, conf.Port))
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
 		return nil, err
+	}
+
+	if conf.Username != "" && conf.Password != "" {
+
 	}
 
 	if err := client.Ping(ctx, nil); err != nil {

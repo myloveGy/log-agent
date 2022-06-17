@@ -17,9 +17,11 @@ type Config struct {
 }
 
 type MongoDBConfig struct {
-	Host   string `ini:"host"`
-	Port   int    `ini:"port"`
-	DBName string `ini:"db_name"`
+	Host     string `ini:"host"`
+	Port     int    `ini:"port"`
+	DBName   string `ini:"db_name"`
+	Username string `ini:"username"`
+	Password string `ini:"password"`
 }
 
 type RedisConfig struct {
