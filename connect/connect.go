@@ -24,10 +24,7 @@ func MongoConnect(ctx context.Context, conf config.MongoDBConfig) (*mongo.Client
 		return nil, err
 	}
 
-	if conf.Username != "" && conf.Password != "" {
-
-	}
-
+	// 检查心跳
 	if err := client.Ping(ctx, nil); err != nil {
 		return nil, err
 	}
