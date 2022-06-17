@@ -8,7 +8,7 @@ type FormatHandler func(text string, conf *Config) (map[string]interface{}, erro
 
 var formatHandles = map[string]FormatHandler{}
 
-func jsonFormat(text string, conf *Config) (map[string]interface{}, error) {
+func jsonFormat(text string, _ *Config) (map[string]interface{}, error) {
 	data := make(map[string]interface{})
 	err := json.Unmarshal([]byte(text), &data)
 	return data, err
