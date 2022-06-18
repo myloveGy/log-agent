@@ -11,6 +11,7 @@ import (
 type Config struct {
 	AppName string       `ini:"app_name"`
 	Mongo   *MongoConfig `ini:"mongodb"`
+	Jwt     *Jwt         `ini:"jwt"`
 	Handler map[string]*tail.Config
 	Start   time.Time
 }

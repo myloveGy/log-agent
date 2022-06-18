@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"log-agent/internal/config"
 	"log-agent/internal/http/request"
 	"log-agent/internal/http/response"
 	"log-agent/internal/model"
@@ -15,6 +16,7 @@ import (
 
 type User struct {
 	UserRepo *repo.UserRepo
+	Config   *config.Config
 }
 
 func (u *User) Login(c *fiber.Ctx) error {
@@ -47,7 +49,15 @@ func (u *User) Login(c *fiber.Ctx) error {
 		return response.NewSystemError(err)
 	}
 
-	return c.JSON(item)
+	var token string
+	if token, err = util.GenerateToken(map[string]string{}, u.Config.Jwt.Secret, u.Config.Jwt.ExpiresTime); err != nil {
+		return response.NewSystemError(err)
+	}
+
+	return c.JSON(map[string]interface{}{
+		"token": token,
+		"user":  item,
+	})
 }
 
 func (u *User) Create(c *fiber.Ctx) error {
