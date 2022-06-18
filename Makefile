@@ -10,3 +10,7 @@ run:
 .PHONY: start
 start:
 	$(GO) build -o app && ./app >> app.log 2>&1
+
+.PHONY: generate
+generate:
+	wire .

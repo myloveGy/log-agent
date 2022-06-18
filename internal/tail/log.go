@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/hpcloud/tail"
-	"log-agent/util"
+	"log-agent/internal/util"
 )
 
 type TailHandle struct {

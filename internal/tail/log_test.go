@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"log-agent/util"
+	"log-agent/internal/util"
 )
 
 func TestTailHandle_toFilename(t *testing.T) {

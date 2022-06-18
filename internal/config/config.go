@@ -5,30 +5,15 @@ import (
 	"strings"
 
 	"gopkg.in/ini.v1"
-	"log-agent/tail"
+	"log-agent/internal/tail"
 )
 
 type Config struct {
 	AppName string         `ini:"app_name"`
-	MongoDB MongoDBConfig  `ini:"mongodb"`
-	Redis   RedisConfig    `ini:"redis"`
+	Mongo   *MongoConfig   `ini:"mongodb"`
+	Redis   *RedisConfig   `ini:"redis"`
 	Tail    string         `ini:"tail"`
 	Handles []*tail.Config `json:"handle"`
-}
-
-type MongoDBConfig struct {
-	Host     string `ini:"host"`
-	Port     int    `ini:"port"`
-	DBName   string `ini:"db_name"`
-	Username string `ini:"username"`
-	Password string `ini:"password"`
-}
-
-type RedisConfig struct {
-	Host     string `ini:"host"`
-	Port     int    `ini:"port"`
-	Password string `ini:"password"`
-	DB       int    `ini:"db"`
 }
 
 func Load(filename string) (*Config, error) {
