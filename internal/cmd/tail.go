@@ -10,6 +10,7 @@ import (
 	"syscall"
 
 	"github.com/urfave/cli/v2"
+	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/sync/errgroup"
 	"log-agent/internal/config"
 	"log-agent/internal/tail"
@@ -17,7 +18,7 @@ import (
 
 type TailCmd *cli.Command
 
-func NewTailCmd(conf *config.Config) TailCmd {
+func NewTailCmd(conf *config.Config, database *mongo.Database) TailCmd {
 	return &cli.Command{
 		Name:  "tail",
 		Usage: "tail command eg: ./app tail",
@@ -27,12 +28,12 @@ func NewTailCmd(conf *config.Config) TailCmd {
 
 			eg, _ := errgroup.WithContext(ctx)
 
-			// // 注册mongo处理
-			// tail.RegisterDriver("mongo", func(data interface{}, tailConfig *tail.Config) error {
-			// 	collection := .Collection(tailConfig.Name)
-			// 	_, err := collection.InsertOne(ctx, data)
-			// 	return err
-			// })
+			// 注册mongo处理
+			tail.RegisterDriver("mongo", func(data interface{}, tailConfig *tail.Config) error {
+				collection := database.Collection(tailConfig.Name)
+				_, err := collection.InsertOne(ctx, data)
+				return err
+			})
 
 			// 第三步：处理配置文件
 			group := &sync.WaitGroup{}

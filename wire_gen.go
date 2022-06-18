@@ -35,7 +35,7 @@ func bootstrap(conf *config.Config) (cli.Commands, func()) {
 		Database: apiDatabase,
 	}
 	httpCmd := cmd.NewHttpCmd(routerRouter)
-	tailCmd := cmd.NewTailCmd(conf)
+	tailCmd := cmd.NewTailCmd(conf, database)
 	commands := &cmd.Commands{
 		HttpCmd: httpCmd,
 		TailCmd: tailCmd,
