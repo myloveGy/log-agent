@@ -20,7 +20,7 @@ func NewHttpCmd(r *router.Router) HttpCmd {
 		},
 		Action: func(c *cli.Context) error {
 			addr := c.String("addr")
-			return r.Run(c.Context, addr)
+			return r.Run(addr)
 		},
 	}
 }

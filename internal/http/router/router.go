@@ -1,10 +1,9 @@
 package router
 
 import (
-	"context"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"log-agent/internal/config"
 	"log-agent/internal/http/api"
 	"log-agent/internal/http/response"
 	"log-agent/internal/util"
@@ -13,9 +12,10 @@ import (
 type Router struct {
 	User     *api.User
 	Database *api.Database
+	Config   *config.Config
 }
 
-func (r *Router) Run(ctx context.Context, addr string) error {
+func (r *Router) Run(addr string) error {
 	app := r.register()
 	return app.Listen(addr)
 }
@@ -29,7 +29,7 @@ func (r *Router) register() *fiber.App {
 
 			if e, ok := err.(*util.ErrorResponse); ok {
 				return ctx.Status(fiber.StatusBadRequest).JSON(map[string]interface{}{
-					"items":   e.Items,
+					"errors":  e.Errors,
 					"message": e.Error(),
 					"code":    response.InvalidParameter,
 				})
@@ -46,16 +46,17 @@ func (r *Router) register() *fiber.App {
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.JSON(map[string]string{
-			"name": "log-agent",
-			"date": util.DateTime(),
-			"ip":   c.IP(),
+			"name":  r.Config.AppName,
+			"start": r.Config.Start.Format("2006-01-02 15:04:05"),
+			"date":  util.DateTime(),
+			"ip":    c.IP(),
 		})
 	})
 
+	// 路由定义
 	app.Post("/login", r.User.Login)
 	app.Post("/user/create", r.User.Create)
 	app.Post("/user/update", r.User.Update)
-
 	app.Post("/database/query", r.Database.Query)
 
 	return app

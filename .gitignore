@@ -1,5 +1,5 @@
 .idea
-.ini
+config.ini
 app
 app.log
 bin/

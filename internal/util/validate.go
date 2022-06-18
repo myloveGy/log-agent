@@ -17,12 +17,12 @@ type ValidationError struct {
 }
 
 type ErrorResponse struct {
-	Items []*ValidationError `json:"items"`
+	Errors []*ValidationError `json:"items"`
 }
 
 func (e *ErrorResponse) Error() string {
 	arr := []string{}
-	for _, item := range e.Items {
+	for _, item := range e.Errors {
 		arr = append(arr, item.Translate)
 	}
 
@@ -45,9 +45,12 @@ func init() {
 
 func Validate(data interface{}) *ErrorResponse {
 	if err := validate.Struct(data); err != nil {
-		errs := make([]*ValidationError, 0)
+		errorResponse := &ErrorResponse{
+			Errors: make([]*ValidationError, 0),
+		}
+
 		for _, err := range err.(validator.ValidationErrors) {
-			errs = append(errs, &ValidationError{
+			errorResponse.Errors = append(errorResponse.Errors, &ValidationError{
 				Field:     err.StructNamespace(),
 				Tag:       err.Tag(),
 				Param:     err.Param(),
@@ -55,9 +58,7 @@ func Validate(data interface{}) *ErrorResponse {
 			})
 		}
 
-		return &ErrorResponse{
-			Items: errs,
-		}
+		return errorResponse
 	}
 
 	return nil

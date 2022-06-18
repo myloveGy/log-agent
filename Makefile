@@ -2,7 +2,7 @@ GO ?= go
 
 .PHONY: build
 build:
-	$(GO) build -o bin/app & cp .ini /bin/.ini
+	$(GO) build -o bin/app
 .PHONY: run
 run:
 	$(GO) run main.go

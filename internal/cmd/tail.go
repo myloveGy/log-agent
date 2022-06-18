@@ -23,7 +23,7 @@ func NewTailCmd(conf *config.Config, database *mongo.Database) TailCmd {
 		Name:  "tail",
 		Usage: "tail command eg: ./app tail",
 		Action: func(cliCtx *cli.Context) error {
-			ctx, cancel := context.WithCancel(context.Background())
+			ctx, cancel := context.WithCancel(cliCtx.Context)
 			defer cancel()
 
 			eg, _ := errgroup.WithContext(ctx)
@@ -37,7 +37,7 @@ func NewTailCmd(conf *config.Config, database *mongo.Database) TailCmd {
 
 			// 第三步：处理配置文件
 			group := &sync.WaitGroup{}
-			for _, v := range conf.Handles {
+			for _, v := range conf.Handler {
 				handle, err := tail.NewTailHandle(v)
 				if err != nil {
 					log.Fatalln(err)

@@ -11,7 +11,7 @@ import (
 func main() {
 
 	// 第一步：加载配置文件
-	conf, err := config.Load("./.ini")
+	conf, err := config.Load("./config.ini")
 	if err != nil {
 		log.Fatalln(err)
 	}
