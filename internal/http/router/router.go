@@ -5,14 +5,16 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"log-agent/internal/config"
 	"log-agent/internal/http/api"
+	"log-agent/internal/http/middleware"
 	"log-agent/internal/http/response"
 	"log-agent/internal/util"
 )
 
 type Router struct {
-	User     *api.User
-	Database *api.Database
-	Config   *config.Config
+	User       *api.User
+	Database   *api.Database
+	Config     *config.Config
+	Middleware *middleware.Middleware
 }
 
 func (r *Router) Run(addr string) error {
@@ -43,7 +45,6 @@ func (r *Router) register() *fiber.App {
 	})
 
 	app.Use(recover.New())
-
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.JSON(map[string]string{
 			"name":  r.Config.AppName,
@@ -55,9 +56,12 @@ func (r *Router) register() *fiber.App {
 
 	// 路由定义
 	app.Post("/login", r.User.Login)
-	app.Post("/user/create", r.User.Create)
-	app.Post("/user/update", r.User.Update)
-	app.Post("/database/query", r.Database.Query)
+
+	auth := app.Use(r.Middleware.Auth())
+	auth.Post("/user/detail", r.User.Detail)
+	auth.Post("/user/create", r.User.Create)
+	auth.Post("/user/update", r.User.Update)
+	auth.Post("/database/query", r.Database.Query)
 
 	return app
 }

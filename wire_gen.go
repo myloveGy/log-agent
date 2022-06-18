@@ -12,6 +12,7 @@ import (
 	"log-agent/internal/cmd"
 	"log-agent/internal/config"
 	"log-agent/internal/http/api"
+	"log-agent/internal/http/middleware"
 	"log-agent/internal/http/router"
 	"log-agent/internal/repo"
 )
@@ -26,13 +27,20 @@ func bootstrap(conf *config.Config) (cli.Commands, func()) {
 	}
 	user := &api.User{
 		UserRepo: userRepo,
+		Config:   conf,
 	}
 	apiDatabase := &api.Database{
 		Database: database,
 	}
+	auth := middleware.NewAuth(conf, userRepo)
+	middlewareMiddleware := &middleware.Middleware{
+		Auth: auth,
+	}
 	routerRouter := &router.Router{
-		User:     user,
-		Database: apiDatabase,
+		User:       user,
+		Database:   apiDatabase,
+		Config:     conf,
+		Middleware: middlewareMiddleware,
 	}
 	httpCmd := cmd.NewHttpCmd(routerRouter)
 	tailCmd := cmd.NewTailCmd(conf, database)
@@ -47,4 +55,4 @@ func bootstrap(conf *config.Config) (cli.Commands, func()) {
 
 // wire.go:
 
-var providerSet = wire.NewSet(config.NewMongoConfig, config.NewMongoDatabase, cmd.ProviderSet, wire.Struct(new(repo.UserRepo), "*"), wire.Struct(new(api.User), "*"), wire.Struct(new(api.Database), "*"), wire.Struct(new(router.Router), "*"))
+var providerSet = wire.NewSet(config.NewMongoConfig, config.NewMongoDatabase, cmd.ProviderSet, wire.Struct(new(repo.UserRepo), "*"), middleware.NewAuth, wire.Struct(new(middleware.Middleware), "*"), wire.Struct(new(api.User), "*"), wire.Struct(new(api.Database), "*"), wire.Struct(new(router.Router), "*"))

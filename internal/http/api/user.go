@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -50,14 +51,23 @@ func (u *User) Login(c *fiber.Ctx) error {
 	}
 
 	var token string
-	if token, err = util.GenerateToken(map[string]string{}, u.Config.Jwt.Secret, u.Config.Jwt.ExpiresTime); err != nil {
+	if token, err = util.GenerateToken(map[string]string{
+		"username": param.Username,
+	}, u.Config.Jwt.Secret, time.Duration(u.Config.Jwt.ExpiresTime)*time.Second); err != nil {
 		return response.NewSystemError(err)
 	}
 
 	return c.JSON(map[string]interface{}{
-		"token": token,
-		"user":  item,
+		"token":           token,
+		"username":        item.Username,
+		"last_login_time": item.LastLoginTime,
+		"last_login_ip":   item.LastLoginIp,
+		"created_at":      item.CreatedAt,
 	})
+}
+
+func (u *User) Detail(c *fiber.Ctx) error {
+	return c.JSON(c.Locals("user"))
 }
 
 func (u *User) Create(c *fiber.Ctx) error {

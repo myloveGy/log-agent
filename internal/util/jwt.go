@@ -23,7 +23,7 @@ func GenerateToken(data interface{}, secret string, expire time.Duration) (strin
 	return token, err
 }
 
-func ParseToken(data interface{}, token string, secret string) (*Claims, error) {
+func ParseToken(data interface{}, token, secret string) (*Claims, error) {
 	item := &Claims{Data: data}
 	if _, err := jwt.ParseWithClaims(token, item, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
