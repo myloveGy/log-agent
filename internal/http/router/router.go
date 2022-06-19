@@ -59,11 +59,12 @@ func (r *Router) register() *fiber.App {
 	// 路由定义
 	app.Post("/login", r.User.Login)
 
-	// auth := app.Use(r.Middleware.Auth())
-	app.Post("/user/detail", r.User.Detail)
-	app.Post("/user/create", r.User.Create)
-	app.Post("/user/update", r.User.Update)
-	app.Post("/database/query", r.Database.Query)
+	auth := app.Use(r.Middleware.Auth())
+	auth.Post("/user/detail", r.User.Detail)
+	auth.Post("/user/create", r.User.Create)
+	auth.Post("/user/update", r.User.Update)
+	auth.Post("/user/list", r.User.List)
+	auth.Post("/database/query", r.Database.Query)
 
 	return app
 }

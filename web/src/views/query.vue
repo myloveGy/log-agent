@@ -29,7 +29,8 @@
                   @size-change="(size) => query({page_size:size})"
                   @current-change="(page) => query({page})"
                   layout="total, sizes, prev, pager, next, jumper"
-                  small="small" :page-sizes="[10,20,30,50,100, 200, 300, 500]"
+                  small="small"
+                  :page-sizes="[10, 20, 50, 100, 200, 500]"
                   background
                   :page-size="data.page_size"
                   :current-page="data.page"
@@ -50,7 +51,7 @@
               <template #default="scope">
                 <json-viewer
                     :value="scope.row"
-                    :expand-depth=10
+                    :expand-depth=5
                     copyable
                     boxed
                     sort
@@ -72,7 +73,7 @@
                 @current-change="(page) => query({page})"
                 layout="total, sizes, prev, pager, next, jumper"
                 small="small"
-                :page-sizes="[10, 20, 30, 50, 100, 200, 300, 500]"
+                :page-sizes="[10, 20, 50, 100, 200, 500]"
                 background
                 :page-size="data.page_size"
                 :current-page="data.page"

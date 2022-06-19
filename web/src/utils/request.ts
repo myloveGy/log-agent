@@ -1,3 +1,5 @@
+import {userStore} from './user'
+
 const API_URL = import.meta.env.VITE_API_URL
 
 export const request = async <T, >(url: string, data: any = {}, options: RequestInit = {}) => {
@@ -6,7 +8,7 @@ export const request = async <T, >(url: string, data: any = {}, options: Request
     method: 'POST',
     body: data,
     headers: {
-      'Authorization': 'VERY-JWT ',
+      'Authorization': 'Bearer ' + userStore.fetch('token'),
       'Content-Type': 'application/json',
       ...headers,
     },

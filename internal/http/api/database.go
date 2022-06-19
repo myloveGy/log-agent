@@ -92,7 +92,6 @@ func (d *Database) Query(c *fiber.Ctx) error {
 
 	return c.JSON(map[string]interface{}{
 		"items":     results,
-		"query":     param.Query,
 		"total":     total,
 		"page":      param.Page,
 		"page_size": param.PageSize,
