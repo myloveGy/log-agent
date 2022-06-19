@@ -89,10 +89,10 @@
 <script setup lang="ts">
 import JsonViewer from 'vue-json-viewer'
 import {Download} from '@element-plus/icons-vue'
-import {databaseQueryApi} from '../api'
+import {databaseQueryApi} from '@/api'
 import {onMounted, ref} from 'vue'
 import {ElMessage} from 'element-plus'
-import {saveJson} from '../utils'
+import {saveJson} from '@/utils'
 
 const formatQuery = (query: string) => {
   if (query.substring(0, 1) === '{' && query.substring(-1, 1) === '}') {

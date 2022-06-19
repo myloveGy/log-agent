@@ -22,7 +22,7 @@
 </template>
 <script setup lang="ts">
 import {ElMessage} from 'element-plus'
-import {userLoginApi, UserRequest} from '../api'
+import {userLoginApi, UserRequest} from '@/api'
 import {ref, onMounted} from 'vue'
 import {userStore} from '../utils'
 import {useRouter} from 'vue-router'

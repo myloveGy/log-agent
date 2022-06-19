@@ -70,7 +70,7 @@
 
 <script setup lang="ts">
 import {onMounted, ref} from 'vue'
-import {PageQuery, Pagination, User, userCreateApi, userListApi, userUpdateApi} from '../../api'
+import {PageQuery, Pagination, User, userCreateApi, userListApi, userUpdateApi} from '@/api'
 import {ElMessage} from 'element-plus'
 import Form from './Form.vue'
 

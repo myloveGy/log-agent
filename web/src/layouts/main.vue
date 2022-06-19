@@ -25,7 +25,7 @@
           主题切换：
           <el-switch v-model="isDark">切换主题</el-switch>
           <span style="margin-right:10px;"></span>
-          <el-dropdown style="margin-right: 10px" >
+          <el-dropdown style="margin-right: 10px">
             <span class="el-dropdown-link" style="display:flex;align-items:center">
               <el-icon style="margin-right: 8px; color: rgb(105, 192, 255)"><User/></el-icon>
               {{ user.username }}
@@ -46,14 +46,14 @@
 </template>
 
 <script setup lang="ts">
-import Menu from '../components/Menu.vue'
+import Menu from '@/components/Menu.vue'
 import {Expand, Fold} from '@element-plus/icons-vue'
 import {useDark, useFullscreen, useToggle} from '@vueuse/core'
-import router from '../router'
+import router from '@/router'
 import {computed, ref} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
-import {LoginUser} from '../api'
-import {userStore} from '../utils'
+import {LoginUser} from '@/api'
+import {userStore} from '@/utils'
 
 const {isFullscreen, toggle} = useFullscreen()
 const route = useRoute()

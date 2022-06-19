@@ -1,4 +1,4 @@
-import {request} from '../utils'
+import {request} from '@/utils'
 import {DatabaseQuery, PageQuery, Pagination, User} from './types'
 
 export * from './types'

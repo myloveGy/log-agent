@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import menus from '../menus'
+import menus from '@/menus'
 import Icon from './Icon.vue'
 import {computed, defineProps} from 'vue'
 import {useRoute} from 'vue-router'

@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import {defineEmits, defineExpose, ref} from 'vue'
-import {UserRequest} from '../../api'
+import {UserRequest} from '@/api'
 import type {FormInstance} from 'element-plus'
 
 const formRef = ref<FormInstance>()
