@@ -2,7 +2,6 @@
   <div class="body">
     <div class="container">
       <div class="div-description">
-        <img src="./1.jpg" alt="">
         <span>日志收集系统</span>
       </div>
       <div class="div-form">
@@ -14,7 +13,6 @@
         </form>
       </div>
       <div class="div-description">
-        <img src="./1.jpg" alt="">
         <span>日志收集系统</span>
       </div>
     </div>

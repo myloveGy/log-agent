@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -20,6 +20,9 @@
   "devDependencies": {
     "@types/node": "^18.0.0",
     "@vitejs/plugin-vue": "^2.3.3",
+    "ali-oss": "^6.17.1",
+    "dotenv": "^16.0.1",
+    "ftp": "^0.3.10",
     "typescript": "^4.5.4",
     "vite": "^2.9.9",
     "vue-tsc": "^0.34.7"
