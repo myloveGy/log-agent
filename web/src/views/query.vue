@@ -4,21 +4,28 @@
       <div id="dashboard">
         <el-card>
           <template #header>
-            <div class="header">
-              <el-input @keyup.enter="query({page: 1})" clearable v-model="search"
-                        placeholder="输入查询条件,Enter"/>
-              <el-date-picker
-                  v-model="datetime"
-                  type="datetimerange"
-                  start-placeholder="开始时间"
-                  end-placeholder="结束时间"
-                  style="margin-left: 8px; width: 460px"
-                  value-format="YYYY-MM-DD HH:mm:ss"
-                  :default-time="[new Date(2000, 2, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59)]"
-              />
-              <el-button style="margin-left: 8px;width: 100px" type="primary" @click="query({page: 1})">查询</el-button>
-            </div>
-
+              <div class="header" >
+                <el-select v-model="params.collection" placeholder="请选择集合" style="margin-right: 8px; width: 160px">
+                  <el-option
+                      v-for="item in collections"
+                      :key="item"
+                      :label="item"
+                      :value="item"
+                  />
+                </el-select>
+                <el-input @keyup.enter="query({page: 1})" clearable v-model="search"
+                          placeholder="输入查询条件,Enter"/>
+                <el-date-picker
+                    v-model="datetime"
+                    type="datetimerange"
+                    start-placeholder="开始时间"
+                    end-placeholder="结束时间"
+                    style="margin-left: 8px; width: 460px"
+                    value-format="YYYY-MM-DD HH:mm:ss"
+                    :default-time="[new Date(2000, 2, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59)]"
+                />
+                <el-button style="margin-left: 8px;width: 100px" type="primary" @click="query({page: 1})">查询</el-button>
+              </div>
           </template>
           <div v-if="data" class="header">
             <div>
@@ -67,19 +74,6 @@
             <el-table-column prop="ip" label="ip" width="180"/>
             <el-table-column prop="city" label="city" width="180" show-overflow-tooltip/>
           </el-table>
-          <div v-if="data && data.total > 1" style="margin-top:10px;">
-            <el-pagination
-                @size-change="(size) => query({page_size:size})"
-                @current-change="(page) => query({page})"
-                layout="total, sizes, prev, pager, next, jumper"
-                small="small"
-                :page-sizes="[10, 20, 50, 100, 200, 500]"
-                background
-                :page-size="data.page_size"
-                :current-page="data.page"
-                :total="data.total"
-            />
-          </div>
         </el-card>
       </div>
     </el-main>
@@ -89,7 +83,7 @@
 <script setup lang="ts">
 import JsonViewer from 'vue-json-viewer'
 import {Download} from '@element-plus/icons-vue'
-import {databaseQueryApi} from '@/api'
+import {databaseQueryApi, databaseCollectionsApi} from '@/api'
 import {onMounted, ref} from 'vue'
 import {ElMessage} from 'element-plus'
 import {saveJson} from '@/utils'
@@ -111,6 +105,7 @@ const formatQuery = (query: string) => {
   return search
 }
 
+const collections = ref<string[]>([])
 const loading = ref<boolean>(false)
 const datetime = ref<string[]>([])
 const search = ref<string>('')
@@ -159,7 +154,11 @@ const sortChange = ({order}: any) => {
 }
 
 onMounted(() => {
-  query()
+  databaseCollectionsApi().then(({items}) => {
+    collections.value = items
+    params.value.collection = items[0]
+    query()
+  })
 })
 </script>
 

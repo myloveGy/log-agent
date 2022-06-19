@@ -16,6 +16,17 @@ type Database struct {
 	Database *mongo.Database
 }
 
+func (d *Database) Collections(c *fiber.Ctx) error {
+	items, err := d.Database.ListCollectionNames(c.Context(), bson.M{"name": bson.M{"$ne": "user"}})
+	if err != nil {
+		return response.NewSystemError(err)
+	}
+
+	return c.JSON(map[string]interface{}{
+		"items": items,
+	})
+}
+
 func (d *Database) Query(c *fiber.Ctx) error {
 
 	// 解析参数

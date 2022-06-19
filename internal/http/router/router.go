@@ -64,7 +64,10 @@ func (r *Router) register() *fiber.App {
 	auth.Post("/user/create", r.User.Create)
 	auth.Post("/user/update", r.User.Update)
 	auth.Post("/user/list", r.User.List)
+
+	// 数据库操作
 	auth.Post("/database/query", r.Database.Query)
+	auth.Post("/database/collections", r.Database.Collections)
 
 	return app
 }

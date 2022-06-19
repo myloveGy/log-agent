@@ -22,3 +22,4 @@ export const userListApi = (data: UserListRequest) => request<Pagination<User>>(
 
 // 查询
 export const databaseQueryApi = (data: DatabaseQuery) => request<Pagination<any>>('/database/query', data)
+export const databaseCollectionsApi = () => request<{items: string[]}>('/database/collections')
