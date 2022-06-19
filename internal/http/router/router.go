@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"log-agent/internal/config"
 	"log-agent/internal/http/api"
@@ -47,6 +48,7 @@ func (r *Router) register() *fiber.App {
 
 	app.Use(recover.New())
 	app.Use(cors.New())
+	app.Use(logger.New())
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.JSON(map[string]string{
 			"name":  r.Config.AppName,
