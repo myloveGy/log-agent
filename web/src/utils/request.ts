@@ -15,35 +15,19 @@ export const request = async <T, >(url: string, data: any = {}, options: Request
     ...otherOptions,
   }
 
-  if (init.body instanceof FormData) {
-    // @ts-ignore
-    delete init?.headers['Content-Type']
-  } else if (init.body && typeof init.body === 'object') {
+  if (init.body && typeof init.body === 'object') {
     init.body = JSON.stringify(init.body)
   }
 
   const result = await fetch(`${API_URL}${url}`, init)
   const response = await result.json()
-  if (result.status < 200 || result.status > 300) {
-    // notification.error({
-    //   message: `请求错误 ${result.status}: ${result.url}`,
-    // })
-
-    throw response
+  if (result.status == 200) {
+    return response
   }
 
-  return response
-
-  // if (response.code === 40003) {
-  //   redirectInfo.save({redirect: window.location.href}, 3600)
-  //   userStore.flush()
-  //   window.location.href = '/'
-  //   throw response
-  // }
-  //
-  // if (response.code === 10000) {
-  //   return response.data
-  // }
+  if (response.code === 'Unauthenticated') {
+    userStore.flush()
+  }
 
   throw response
 }
