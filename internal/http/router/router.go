@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"log-agent/internal/config"
 	"log-agent/internal/http/api"
@@ -45,6 +46,7 @@ func (r *Router) register() *fiber.App {
 	})
 
 	app.Use(recover.New())
+	app.Use(cors.New())
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.JSON(map[string]string{
 			"name":  r.Config.AppName,
@@ -57,11 +59,11 @@ func (r *Router) register() *fiber.App {
 	// 路由定义
 	app.Post("/login", r.User.Login)
 
-	auth := app.Use(r.Middleware.Auth())
-	auth.Post("/user/detail", r.User.Detail)
-	auth.Post("/user/create", r.User.Create)
-	auth.Post("/user/update", r.User.Update)
-	auth.Post("/database/query", r.Database.Query)
+	// auth := app.Use(r.Middleware.Auth())
+	app.Post("/user/detail", r.User.Detail)
+	app.Post("/user/create", r.User.Create)
+	app.Post("/user/update", r.User.Update)
+	app.Post("/database/query", r.Database.Query)
 
 	return app
 }
