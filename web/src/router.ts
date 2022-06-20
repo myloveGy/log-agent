@@ -9,7 +9,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, form) => {
-  if (to.path !== '/' && !userStore.fetch('token')) {
+  if (!['/', '/register'].includes(to.path) && !userStore.fetch('token')) {
     return {name: 'login'}
   }
 })

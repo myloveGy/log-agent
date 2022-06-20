@@ -11,6 +11,7 @@ export interface LoginUser extends User {
 
 // 登录
 export const userLoginApi = (data: UserRequest) => request<LoginUser>('/login', data)
+export const userRegisterApi = (data: UserRequest) => request<LoginUser>('/register', data)
 
 // 用户相关
 type UserResponse = Pick<User, 'username'>
@@ -22,4 +23,4 @@ export const userListApi = (data: UserListRequest) => request<Pagination<User>>(
 
 // 查询
 export const databaseQueryApi = (data: DatabaseQuery) => request<Pagination<any>>('/database/query', data)
-export const databaseCollectionsApi = () => request<{items: string[]}>('/database/collections')
+export const databaseCollectionsApi = () => request<{ items: string[] }>('/database/collections')
