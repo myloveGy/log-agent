@@ -9,11 +9,16 @@ import (
 )
 
 type Config struct {
-	AppName string       `ini:"app_name"`
-	Mongo   *MongoConfig `ini:"mongodb"`
-	Jwt     *Jwt         `ini:"jwt"`
-	Handler map[string]*tail.Config
-	Start   time.Time
+	AppName    string       `ini:"app_name"`
+	Mongo      *MongoConfig `ini:"mongodb"`
+	Jwt        *Jwt         `ini:"jwt"`
+	HttpConfig *HttpConfig  `ini:"http"`
+	Handler    map[string]*tail.Config
+	Start      time.Time
+}
+
+type HttpConfig struct {
+	AllowOrigins string `ini:"allow_origins"`
 }
 
 func Load(filename string) (*Config, error) {
