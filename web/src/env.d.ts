@@ -9,6 +9,7 @@ interface ImportMeta {
   readonly env: ImportMetaEnv
 }
 
+declare module 'lodash'
 declare module 'vue-json-viewer'
 declare module '*.vue' {
   import {DefineComponent} from 'vue'

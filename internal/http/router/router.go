@@ -14,6 +14,7 @@ import (
 type Router struct {
 	User       *api.User
 	Database   *api.Database
+	Guest      *api.Guest
 	Config     *config.Config
 	Middleware *middleware.Middleware
 }
@@ -58,8 +59,10 @@ func (r *Router) register() *fiber.App {
 		})
 	})
 
-	// 路由定义
-	app.Post("/login", r.User.Login)
+	// 游客可访问路由
+	app.Post("/login", r.Guest.Login)
+	app.Post("/register", r.Guest.Register)
+	app.Get("/allow-register", r.Guest.AllowRegister)
 
 	auth := app.Use(r.Middleware.Auth())
 	auth.Post("/user/detail", r.User.Detail)

@@ -2,7 +2,6 @@ package api
 
 import (
 	"errors"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
@@ -20,52 +19,6 @@ import (
 type User struct {
 	UserRepo *repo.UserRepo
 	Config   *config.Config
-}
-
-func (u *User) Login(c *fiber.Ctx) error {
-	param := &request.UserRequest{}
-	if err := c.BodyParser(param); err != nil {
-		return response.NewInvalidParameter(err)
-	}
-
-	if err := util.Validate(param); err != nil {
-		return err
-	}
-
-	item, err := u.UserRepo.GetUser(c.Context(), param.Username)
-	if err != nil {
-		return response.NewInvalidParameter(errors.New("用户名或者密码错误"))
-	}
-
-	// 验证密码
-	if err := util.ValidatePassword(param.Password, item.Password); err != nil {
-		return response.NewInvalidParameter(errors.New("用户名或者密码错误"))
-	}
-
-	// 修改登录信息
-	if err := u.UserRepo.Update(c.Context(), &model.User{
-		Id:            item.Id,
-		LastLoginTime: util.DateTime(),
-		LastLoginIp:   c.IP(),
-		UpdatedAt:     util.DateTime(),
-	}); err != nil {
-		return response.NewSystemError(err)
-	}
-
-	var token string
-	if token, err = util.GenerateToken(map[string]string{
-		"username": param.Username,
-	}, u.Config.Jwt.Secret, time.Duration(u.Config.Jwt.ExpiresTime)*time.Second); err != nil {
-		return response.NewSystemError(err)
-	}
-
-	return c.JSON(map[string]interface{}{
-		"token":           token,
-		"username":        item.Username,
-		"last_login_time": item.LastLoginTime,
-		"last_login_ip":   item.LastLoginIp,
-		"created_at":      item.CreatedAt,
-	})
 }
 
 func (u *User) Detail(c *fiber.Ctx) error {

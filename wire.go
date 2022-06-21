@@ -29,6 +29,7 @@ var providerSet = wire.NewSet(
 	wire.Struct(new(middleware.Middleware), "*"),
 	wire.Struct(new(api.User), "*"),
 	wire.Struct(new(api.Database), "*"),
+	wire.Struct(new(api.Guest), "*"),
 	wire.Struct(new(router.Router), "*"),
 )
 

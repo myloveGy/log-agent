@@ -5,22 +5,24 @@
         <el-form class="form register" @submit.stop.prevent="register">
           <h1>日志收集系统</h1>
           <p>请输入账号密码注册</p>
-          <el-input
-              v-model="form.username"
-              class="input"
-              style="width: 80%"
-              placeholder="帐号"
-              :prefix-icon="User"
-          />
-          <el-input
-              v-model="form.password"
-              class="input"
-              style="width: 80%"
-              placeholder="密码"
-              type="password"
-              show-password
-              :prefix-icon="Lock"
-          />
+          <el-form-item prop="username">
+            <el-input
+                v-model="form.username"
+                class="input"
+                placeholder="帐号"
+                :prefix-icon="User"
+            />
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input
+                v-model="form.password"
+                class="input"
+                placeholder="密码"
+                type="password"
+                show-password
+                :prefix-icon="Lock"
+            />
+          </el-form-item>
           <el-button type="primary" @click="register" :loading="loading" :disabled="loading">
             注册
           </el-button>
@@ -55,7 +57,7 @@
           <el-button type="primary" @click="login" :loading="loading" :disabled="loading">
             登录
           </el-button>
-          <div class="control">
+          <div class="control" v-if="allowRegister === 'Y'">
             <span>没有帐号？<a @click="action='login'">去注册</a></span>
           </div>
         </el-form>
@@ -63,12 +65,12 @@
 
       <div class="container-overlay">
         <div class="overlay">
-          <!--          <div class="overlay-panel overlay-left">-->
-          <!--            <button class="btn" @click="action = 'register'">登录</button>-->
-          <!--          </div>-->
-          <!--          <div class="overlay-panel overlay-right">-->
-          <!--            <button class="btn" @click="action = 'login'">注册</button>-->
-          <!--          </div>-->
+          <div class="overlay-panel overlay-left">
+            <el-button class="btn" @click="action = 'register'">去登录</el-button>
+          </div>
+          <div class="overlay-panel overlay-right">
+            <el-button class="btn" @click="action = 'login'" v-if="allowRegister === 'Y'">去注册</el-button>
+          </div>
         </div>
       </div>
     </div>
@@ -76,9 +78,9 @@
 </template>
 <script setup lang="ts">
 import {ElMessage, FormInstance} from 'element-plus'
-import {userLoginApi, userRegisterApi, UserRequest} from '@/api'
+import {loginApi, registerApi, allowRegisterApi, UserRequest} from '@/api'
 import {onMounted, ref} from 'vue'
-import {userStore} from '@/utils'
+import {sync, userStore} from '@/utils'
 import {useRouter} from 'vue-router'
 import {Lock, User} from '@element-plus/icons-vue'
 
@@ -96,21 +98,21 @@ const loading = ref(false)
 const router = useRouter()
 const form = ref<UserRequest>({username: '', password: ''})
 const action = ref('register')
+const allowRegister = ref<string>('N')
 
 const login = async () => {
   await formRef.value?.validate()
   loading.value = true
-  userLoginApi(form.value).then(data => {
+  return sync(async () => {
+    const data = await loginApi(form.value)
     userStore.save(data)
-    router.push('/database')
-  }).catch(e => {
-    ElMessage.error('登录失败: ' + e?.message)
-  }).finally(() => loading.value = false)
+    await router.push('/database')
+  }, false).finally(() => loading.value = false)
 }
 
 const register = () => {
   loading.value = true
-  userRegisterApi(form.value).then(data => {
+  registerApi(form.value).then(data => {
     userStore.save(data)
     router.push('/database')
   }).catch(e => {
@@ -122,6 +124,11 @@ onMounted(() => {
   if (userStore.fetch('token')) {
     router.push('/database')
   }
+
+  sync(async () => {
+    const response = await allowRegisterApi()
+    allowRegister.value = response.allow
+  }, false)
 })
 </script>
 <style scoped lang="scss">
@@ -271,10 +278,6 @@ p {
     margin-bottom: 8px;
   }
 
-  //.input {
-  //  margin: 8px 0 0 0;
-  //}
-
   .el-form-item {
     margin-top: 8px;
     width: 80%;
@@ -287,6 +290,18 @@ p {
     font-size: 14px;
     transition: .4s;
     letter-spacing: 10px;
+  }
+
+  .btn {
+    width: 50%;
+    height: 32px;
+    margin: 30px auto 10px;
+    font-size: 14px;
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    background-color: rgba(255, 255, 255, 0.5);
+    transition: .4s;
   }
 
   .control {

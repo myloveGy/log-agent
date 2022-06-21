@@ -2,7 +2,7 @@ import {userStore} from './user'
 
 const API_URL = import.meta.env.VITE_API_URL
 
-export const request = async <T, >(url: string, data: any = {}, options: RequestInit = {}) => {
+export const request = async <T, >(url: string, data: any = {}, options: RequestInit = {}): Promise<T> => {
   const {headers, ...otherOptions} = options
   const init: RequestInit = {
     method: 'POST',
@@ -15,7 +15,9 @@ export const request = async <T, >(url: string, data: any = {}, options: Request
     ...otherOptions,
   }
 
-  if (init.body && typeof init.body === 'object') {
+  if (init.method === 'GET') {
+    init.body = null
+  } else if (init.body && typeof init.body === 'object') {
     init.body = JSON.stringify(init.body)
   }
 

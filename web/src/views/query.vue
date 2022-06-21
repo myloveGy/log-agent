@@ -4,28 +4,28 @@
       <div id="dashboard">
         <el-card>
           <template #header>
-              <div class="header" >
-                <el-select v-model="params.collection" placeholder="请选择集合" style="margin-right: 8px; width: 160px">
-                  <el-option
-                      v-for="item in collections"
-                      :key="item"
-                      :label="item"
-                      :value="item"
-                  />
-                </el-select>
-                <el-input @keyup.enter="query({page: 1})" clearable v-model="search"
-                          placeholder="输入查询条件,Enter"/>
-                <el-date-picker
-                    v-model="datetime"
-                    type="datetimerange"
-                    start-placeholder="开始时间"
-                    end-placeholder="结束时间"
-                    style="margin-left: 8px; width: 460px"
-                    value-format="YYYY-MM-DD HH:mm:ss"
-                    :default-time="[new Date(2000, 2, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59)]"
+            <div class="header">
+              <el-select v-model="params.collection" placeholder="请选择集合" style="margin-right: 8px; width: 160px">
+                <el-option
+                    v-for="item in collections"
+                    :key="item"
+                    :label="item"
+                    :value="item"
                 />
-                <el-button style="margin-left: 8px;width: 100px" type="primary" @click="query({page: 1})">查询</el-button>
-              </div>
+              </el-select>
+              <el-input @keyup.enter="query({page: 1})" clearable v-model="search"
+                        placeholder="输入查询条件,Enter"/>
+              <el-date-picker
+                  v-model="datetime"
+                  type="datetimerange"
+                  start-placeholder="开始时间"
+                  end-placeholder="结束时间"
+                  style="margin-left: 8px; width: 460px"
+                  value-format="YYYY-MM-DD HH:mm:ss"
+                  :default-time="[new Date(2000, 2, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59)]"
+              />
+              <el-button style="margin-left: 8px;width: 100px" type="primary" @click="query({page: 1})">查询</el-button>
+            </div>
           </template>
           <div v-if="data" class="header">
             <div>
@@ -70,7 +70,7 @@
             <el-table-column prop="request_method" label="request_method"/>
             <el-table-column prop="request_uri" label="request_uri"/>
             <el-table-column prop="request_duration" label="request_duration"
-                             :formatter="(row, column, value) => value.toFixed(4)"/>
+                             :formatter="(row, column, value) => value ? value.toFixed(4) : value"/>
             <el-table-column prop="ip" label="ip" width="180"/>
             <el-table-column prop="city" label="city" width="180" show-overflow-tooltip/>
           </el-table>
@@ -86,7 +86,7 @@ import {Download} from '@element-plus/icons-vue'
 import {databaseQueryApi, databaseCollectionsApi} from '@/api'
 import {onMounted, ref} from 'vue'
 import {ElMessage} from 'element-plus'
-import {saveJson} from '@/utils'
+import {saveJson, sync} from '@/utils'
 
 const formatQuery = (query: string) => {
   if (query.substring(0, 1) === '{' && query.substring(-1, 1) === '}') {
@@ -141,11 +141,9 @@ const query = (requestQuery: any = {}) => {
     ElMessage.error('查询参数解析失败: ' + e)
   }
 
-  databaseQueryApi(request).then(response => {
-    data.value = response
-  }).finally(() => {
-    loading.value = false
-  })
+  sync(async () => {
+    data.value = await databaseQueryApi(request)
+  }).finally(() => loading.value = false)
 }
 
 const sortChange = ({order}: any) => {
@@ -154,11 +152,12 @@ const sortChange = ({order}: any) => {
 }
 
 onMounted(() => {
-  databaseCollectionsApi().then(({items}) => {
+  sync(async () => {
+    const {items} = await databaseCollectionsApi()
     collections.value = items
     params.value.collection = items[0]
     query()
-  })
+  }, false)
 })
 </script>
 

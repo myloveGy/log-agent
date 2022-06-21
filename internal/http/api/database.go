@@ -41,9 +41,9 @@ func (d *Database) Query(c *fiber.Ctx) error {
 	}
 
 	// 排序方式
-	sortValue := 1
+	sortValue := -1
 	if param.Order == "asc" {
-		sortValue = -1
+		sortValue = 1
 	}
 
 	// 时间段查询
@@ -79,7 +79,7 @@ func (d *Database) Query(c *fiber.Ctx) error {
 	}
 
 	// 分页查询数据
-	sort := bson.D{{"dateline", sortValue}}
+	sort := bson.D{{"datetime", sortValue}}
 	findOptions := options.Find()
 	findOptions.SetSort(sort)
 	findOptions.SetLimit(param.PageSize)

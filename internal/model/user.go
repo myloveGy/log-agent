@@ -4,6 +4,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+const (
+	StatusOnline  = "Y"
+	StatusOffline = "N"
+)
+
 type User struct {
 	Id            primitive.ObjectID `bson:"_id" json:"id"`
 	Username      string             `json:"username" bson:"username"`

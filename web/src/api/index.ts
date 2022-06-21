@@ -1,17 +1,14 @@
 import {request} from '@/utils'
-import {DatabaseQuery, PageQuery, Pagination, User} from './types'
+import {AllowRegister, DatabaseQuery, LoginUser, PageQuery, Pagination, User} from './types'
 
 export * from './types'
 
 export type UserRequest = Pick<User, 'username' | 'password'>
 
-export interface LoginUser extends User {
-  token: string
-}
-
 // 登录
-export const userLoginApi = (data: UserRequest) => request<LoginUser>('/login', data)
-export const userRegisterApi = (data: UserRequest) => request<LoginUser>('/register', data)
+export const loginApi = (data: UserRequest) => request<LoginUser>('/login', data)
+export const registerApi = (data: UserRequest) => request<LoginUser>('/register', data)
+export const allowRegisterApi = () => request<AllowRegister>('/allow-register', {}, {method: 'GET'})
 
 // 用户相关
 type UserResponse = Pick<User, 'username'>

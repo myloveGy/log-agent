@@ -13,6 +13,10 @@ type UserRepo struct {
 	Database *mongo.Database
 }
 
+func (u *UserRepo) Count(ctx context.Context, user *model.User) (int64, error) {
+	return u.Database.Collection(user.Collection()).CountDocuments(ctx, util.StructNotZero2BsonM(user))
+}
+
 func (u *UserRepo) GetUser(ctx context.Context, username string) (*model.User, error) {
 	item := &model.User{}
 	if err := u.Database.Collection(item.Collection()).FindOne(ctx, bson.M{

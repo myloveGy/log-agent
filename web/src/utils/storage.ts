@@ -42,7 +42,7 @@ export class LocalStore<T> {
    * @param data 数据信息
    * @param expire_time
    */
-  save(data: any, expire_time: number = 0) {
+  save(data: T, expire_time: number = 0) {
     let expireTime = expire_time
 
     // 有效时间

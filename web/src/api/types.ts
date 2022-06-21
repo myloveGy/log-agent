@@ -17,14 +17,27 @@ export interface DatabaseQuery extends PageQuery {
 }
 
 export interface User {
-	password: string;
-	last_login_time: string;
-	updated_at: string;
-	last_login_ip: string;
-	created_at: string;
-	id: string;
-	username: string;
-	status: string;
+  password: string;
+  last_login_time: string;
+  updated_at: string;
+  last_login_ip: string;
+  created_at: string;
+  id: string;
+  username: string;
+  status: string;
+}
+
+export interface LoginUser {
+  last_login_time: string;
+  last_login_ip: string;
+  created_at: string;
+  token: string;
+  username: string;
+}
+
+export interface AllowRegister {
+  allow: string;
+  total: number;
 }
 
 

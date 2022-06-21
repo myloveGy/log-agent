@@ -32,6 +32,10 @@ func bootstrap(conf *config.Config) (cli.Commands, func()) {
 	apiDatabase := &api.Database{
 		Database: database,
 	}
+	guest := &api.Guest{
+		UserRepo: userRepo,
+		Config:   conf,
+	}
 	auth := middleware.NewAuth(conf, userRepo)
 	middlewareMiddleware := &middleware.Middleware{
 		Auth: auth,
@@ -39,6 +43,7 @@ func bootstrap(conf *config.Config) (cli.Commands, func()) {
 	routerRouter := &router.Router{
 		User:       user,
 		Database:   apiDatabase,
+		Guest:      guest,
 		Config:     conf,
 		Middleware: middlewareMiddleware,
 	}
@@ -55,4 +60,4 @@ func bootstrap(conf *config.Config) (cli.Commands, func()) {
 
 // wire.go:
 
-var providerSet = wire.NewSet(config.NewMongoConfig, config.NewMongoDatabase, cmd.ProviderSet, wire.Struct(new(repo.UserRepo), "*"), middleware.NewAuth, wire.Struct(new(middleware.Middleware), "*"), wire.Struct(new(api.User), "*"), wire.Struct(new(api.Database), "*"), wire.Struct(new(router.Router), "*"))
+var providerSet = wire.NewSet(config.NewMongoConfig, config.NewMongoDatabase, cmd.ProviderSet, wire.Struct(new(repo.UserRepo), "*"), middleware.NewAuth, wire.Struct(new(middleware.Middleware), "*"), wire.Struct(new(api.User), "*"), wire.Struct(new(api.Database), "*"), wire.Struct(new(api.Guest), "*"), wire.Struct(new(router.Router), "*"))
