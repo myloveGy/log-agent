@@ -2,8 +2,6 @@
   <div class="body">
     <div class="container">
       <div class="div-description">
-        <img src="./1.jpg" alt="">
-        <span>更多咨询可扫码观看~</span>
       </div>
       <div class="div-form" :style="{transform: action === 'register' ? 'rotateY(180deg)' : 'none'}">
         <form action="" class="form-login" :class="{disappear: action === 'register'}">
@@ -27,15 +25,13 @@
           </div>
         </form>
       </div>
-      <div class="div-description">
-        <img src="./1.jpg" alt=""><span>更多咨询可扫码观看~</span>
-      </div>
+      <div class="div-description"></div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import {ElMessage} from 'element-plus'
-import {userLoginApi, UserRequest} from '@/api'
+import {loginApi, UserRequest} from '@/api'
 import {ref, onMounted} from 'vue'
 import {userStore} from '@/utils'
 import {useRouter} from 'vue-router'
@@ -45,7 +41,7 @@ const action = ref('login')
 const router = useRouter()
 const form = ref<UserRequest>({username: '', password: ''})
 const submit = () => {
-  userLoginApi(form.value).then(data => {
+  loginApi(form.value).then(data => {
     userStore.save(data)
     router.push('/database')
   }).catch(e => {
@@ -78,6 +74,7 @@ onMounted(() => {
   background-size: cover;
   transform: translateX(0);
   transition: transform 0.6s ease-in-out;
+  border-radius: 5px;
 }
 
 .div-description {
@@ -87,7 +84,6 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  /*background-color: #fff;*/
   border-radius: 5px 0 0 5px;
 
 }
