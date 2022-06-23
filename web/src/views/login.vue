@@ -5,7 +5,7 @@
         :class="{ 'right-panel-active': action === 'register' }"
     >
       <div class="container-form container-signup">
-        <UserForm
+        <user-form
             title="日志收集系统"
             description="请输入账号密码注册"
             :api="registerApi"
@@ -13,9 +13,9 @@
             @submit="handler"
         >
           <template #footer>
-            <span>已有帐号？<a @click="action = 'register'">去登录</a></span>
+            <span>已有帐号？<a @click="action = 'login'">去登录</a></span>
           </template>
-        </UserForm>
+        </user-form>
       </div>
       <div class="container-form container-sign-in">
         <UserForm
@@ -26,7 +26,7 @@
             @submit="handler"
         >
           <template #footer v-if="allow === 'Y'">
-            <span>没有帐号？<a @click="action = 'login'">去注册</a></span>
+            <span>没有帐号？<a @click="action = 'register'">去注册</a></span>
           </template>
         </UserForm>
       </div>
@@ -34,14 +34,14 @@
       <div class="container-overlay">
         <div class="overlay">
           <div class="overlay-panel overlay-left">
-            <el-button class="btn" @click="action = 'register'">
+            <el-button class="btn" @click="action = 'login'">
               去登录
             </el-button>
           </div>
           <div class="overlay-panel overlay-right">
             <el-button
                 class="btn"
-                @click="action = 'login'"
+                @click="action = 'register'"
                 v-if="allow === 'Y'"
             >
               去注册

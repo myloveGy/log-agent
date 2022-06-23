@@ -10,7 +10,7 @@ export const useLogin = () => {
 
   const handler = async (data: LoginUser) => {
     userStore.save(data)
-    await router.push('/database')
+    return router.push('/database')
   }
 
   onMounted(() => {
