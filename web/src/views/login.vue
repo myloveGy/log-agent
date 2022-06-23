@@ -1,75 +1,51 @@
 <template>
   <div class="body">
-    <div class="container" :class="{'right-panel-active': action === 'login'}">
+    <div
+        class="container"
+        :class="{ 'right-panel-active': action === 'login' }"
+    >
       <div class="container-form container-signup">
-        <el-form class="form register" @submit.stop.prevent="register">
-          <h1>日志收集系统</h1>
-          <p>请输入账号密码注册</p>
-          <el-form-item prop="username">
-            <el-input
-                v-model="form.username"
-                class="input"
-                placeholder="帐号"
-                :prefix-icon="User"
-            />
-          </el-form-item>
-          <el-form-item prop="password">
-            <el-input
-                v-model="form.password"
-                class="input"
-                placeholder="密码"
-                type="password"
-                show-password
-                :prefix-icon="Lock"
-            />
-          </el-form-item>
-          <el-button type="primary" @click="register" :loading="loading" :disabled="loading">
-            注册
-          </el-button>
-          <div class="control">
-            <span>已有帐号？<a @click="action='register'">去登录</a></span>
-          </div>
-        </el-form>
+        <UserForm
+            title="日志收集系统"
+            description="请输入账号密码注册"
+            :api="registerApi"
+            submit-text="注册"
+            @submit="handler"
+        >
+          <template #footer>
+            <span>已有帐号？<a @click="action = 'register'">去登录</a></span>
+          </template>
+        </UserForm>
       </div>
-
       <div class="container-form container-sign-in">
-        <el-form ref="formRef" :model="form" :rules="rules" class="form login" @submit.stop.prevent="login">
-          <h1>日志收集系统</h1>
-          <p>请输入账号密码登录</p>
-          <el-form-item prop="username">
-            <el-input
-                v-model="form.username"
-                class="input"
-                placeholder="帐号"
-                :prefix-icon="User"
-            />
-          </el-form-item>
-          <el-form-item prop="password">
-            <el-input
-                v-model="form.password"
-                class="input"
-                placeholder="密码"
-                type="password"
-                show-password
-                :prefix-icon="Lock"
-            />
-          </el-form-item>
-          <el-button type="primary" @click="login" :loading="loading" :disabled="loading">
-            登录
-          </el-button>
-          <div class="control" v-if="allowRegister === 'Y'">
-            <span>没有帐号？<a @click="action='login'">去注册</a></span>
-          </div>
-        </el-form>
+        <UserForm
+            title="日志收集系统"
+            description="请输入账号密码登录"
+            :api="loginApi"
+            submit-text="登录"
+            @submit="handler"
+        >
+          <template #footer v-if="allowRegister === 'Y'">
+            <span>没有帐号？<a @click="action = 'login'">去注册</a></span>
+          </template>
+        </UserForm>
       </div>
 
       <div class="container-overlay">
         <div class="overlay">
           <div class="overlay-panel overlay-left">
-            <el-button class="btn" @click="action = 'register'">去登录</el-button>
+            <el-button class="btn" @click="action = 'register'">
+              去登录
+            </el-button>
           </div>
           <div class="overlay-panel overlay-right">
-            <el-button class="btn" @click="action = 'login'" v-if="allowRegister === 'Y'">去注册</el-button>
+            <el-button
+                class="btn"
+                @click="action = 'login'"
+                v-if="allowRegister === 'Y'"
+            >
+              去注册
+            </el-button>
           </div>
         </div>
       </div>
@@ -77,47 +53,19 @@
   </div>
 </template>
 <script setup lang="ts">
-import {ElMessage, FormInstance} from 'element-plus'
-import {loginApi, registerApi, allowRegisterApi, UserRequest} from '@/api'
+import {allowRegisterApi, loginApi, LoginUser, registerApi} from '@/api'
 import {onMounted, ref} from 'vue'
 import {sync, userStore} from '@/utils'
 import {useRouter} from 'vue-router'
-import {Lock, User} from '@element-plus/icons-vue'
+import UserForm from '@/components/UserForm.vue'
 
-const formRef = ref<FormInstance>()
-const rules = {
-  username: [
-    {required: true, message: '请输入用户名称'},
-  ],
-  password: [
-    {required: true, message: '请输入登录密码'},
-  ],
-}
-
-const loading = ref(false)
 const router = useRouter()
-const form = ref<UserRequest>({username: '', password: ''})
 const action = ref('register')
 const allowRegister = ref<string>('N')
 
-const login = async () => {
-  await formRef.value?.validate()
-  loading.value = true
-  return sync(async () => {
-    const data = await loginApi(form.value)
-    userStore.save(data)
-    await router.push('/database')
-  }, false).finally(() => loading.value = false)
-}
-
-const register = () => {
-  loading.value = true
-  registerApi(form.value).then(data => {
-    userStore.save(data)
-    router.push('/database')
-  }).catch(e => {
-    ElMessage.error('注册失败: ' + e?.message)
-  }).finally(() => loading.value = false)
+const handler = async (data: LoginUser) => {
+  userStore.save(data)
+  await router.push('/database')
 }
 
 onMounted(() => {
@@ -128,7 +76,7 @@ onMounted(() => {
   sync(async () => {
     const response = await allowRegisterApi()
     allowRegister.value = response.allow
-  }, false)
+  })
 })
 </script>
 <style scoped lang="scss">
@@ -252,46 +200,7 @@ $max-height: 400px;
   transform: translateX(20%);
 }
 
-p {
-  font-size: 12px;
-  color: #555;
-  margin: 8px auto 12px;
-}
-
-.form {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  text-align: center;
-  background: $white;
-}
-
 .container {
-  h1 {
-    font-size: 32px;
-    margin-top: 0;
-    text-transform: uppercase;
-    letter-spacing: 5px;
-    margin-bottom: 8px;
-  }
-
-  .el-form-item {
-    margin-top: 8px;
-    width: 80%;
-  }
-
-  button {
-    width: 80%;
-    height: 32px;
-    margin: 8px auto 8px;
-    font-size: 14px;
-    transition: .4s;
-    letter-spacing: 10px;
-  }
-
   .btn {
     width: 50%;
     height: 32px;
@@ -301,27 +210,21 @@ p {
     border: none;
     border-radius: 16px;
     background-color: rgba(255, 255, 255, 0.5);
-    transition: .4s;
+    transition: 0.4s;
+    letter-spacing: 10px;
   }
 
-  .control {
-    margin: 8px auto;
-    font-size: 13px;
+  a {
+    color: #409eff;
+    margin: 0 5px;
+    letter-spacing: 1px;
+    cursor: pointer;
 
-    a {
-      color: #409eff;
-      margin: 0 5px;
-      letter-spacing: 1px;
-      cursor: pointer;
-
-      &:hover {
-        color: #000;
-      }
+    &:hover {
+      color: #000;
     }
-
   }
 }
-
 
 @keyframes show {
   0%,
@@ -337,4 +240,3 @@ p {
   }
 }
 </style>
-

@@ -4,15 +4,16 @@ import (
 	"errors"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 	"log-agent/internal/config"
 	"log-agent/internal/http/request"
 	"log-agent/internal/http/response"
 	"log-agent/internal/model"
 	"log-agent/internal/repo"
 	"log-agent/internal/util"
+
+	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // Guest 游客接口
@@ -39,6 +40,11 @@ func (g *Guest) Login(c *fiber.Ctx) error {
 	// 验证密码
 	if err := util.ValidatePassword(param.Password, item.Password); err != nil {
 		return response.NewInvalidParameter(errors.New("用户名或者密码错误"))
+	}
+
+	// 验证状态
+	if item.Status != model.StatusOnline {
+		return response.NewInvalidParameter("用户已经停用")
 	}
 
 	// 修改登录信息
@@ -73,7 +79,8 @@ func (g *Guest) Register(c *fiber.Ctx) error {
 		return response.NewSystemError(err)
 	}
 
-	if total > 0 {
+	// 不允许
+	if total > 0 && !g.Config.HttpConfig.AllowRegister {
 		return response.NewInvalidParameter("不允许注册")
 	}
 
@@ -131,7 +138,7 @@ func (g *Guest) AllowRegister(c *fiber.Ctx) error {
 	}
 
 	allow := model.StatusOffline
-	if total == 0 {
+	if total == 0 || g.Config.HttpConfig.AllowRegister {
 		allow = model.StatusOnline
 	}
 

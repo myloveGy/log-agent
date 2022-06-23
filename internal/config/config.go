@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"gopkg.in/ini.v1"
 	"log-agent/internal/tail"
+
+	"gopkg.in/ini.v1"
 )
 
 type Config struct {
@@ -18,7 +19,8 @@ type Config struct {
 }
 
 type HttpConfig struct {
-	AllowOrigins string `ini:"allow_origins"`
+	AllowOrigins  string `ini:"allow_origins"`
+	AllowRegister bool   `ini:"allow_register"`
 }
 
 func Load(filename string) (*Config, error) {
