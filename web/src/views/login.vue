@@ -2,7 +2,7 @@
   <div class="body">
     <div
         class="container"
-        :class="{ 'right-panel-active': action === 'login' }"
+        :class="{ 'right-panel-active': action === 'register' }"
     >
       <div class="container-form container-signup">
         <UserForm
@@ -25,7 +25,7 @@
             submit-text="登录"
             @submit="handler"
         >
-          <template #footer v-if="allowRegister === 'Y'">
+          <template #footer v-if="allow === 'Y'">
             <span>没有帐号？<a @click="action = 'login'">去注册</a></span>
           </template>
         </UserForm>
@@ -42,7 +42,7 @@
             <el-button
                 class="btn"
                 @click="action = 'login'"
-                v-if="allowRegister === 'Y'"
+                v-if="allow === 'Y'"
             >
               去注册
             </el-button>
@@ -53,31 +53,11 @@
   </div>
 </template>
 <script setup lang="ts">
-import {allowRegisterApi, loginApi, LoginUser, registerApi} from '@/api'
-import {onMounted, ref} from 'vue'
-import {sync, userStore} from '@/utils'
-import {useRouter} from 'vue-router'
+import {loginApi, registerApi} from '@/api'
 import UserForm from '@/components/UserForm.vue'
+import {useLogin} from '@/hooks'
 
-const router = useRouter()
-const action = ref('register')
-const allowRegister = ref<string>('N')
-
-const handler = async (data: LoginUser) => {
-  userStore.save(data)
-  await router.push('/database')
-}
-
-onMounted(() => {
-  if (userStore.fetch('token')) {
-    router.push('/database')
-  }
-
-  sync(async () => {
-    const response = await allowRegisterApi()
-    allowRegister.value = response.allow
-  })
-})
+const {action, handler, allow} = useLogin()
 </script>
 <style scoped lang="scss">
 $white: #fff;

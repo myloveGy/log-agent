@@ -3,3 +3,4 @@ config.ini
 app
 app.log
 bin/
+.vscode
