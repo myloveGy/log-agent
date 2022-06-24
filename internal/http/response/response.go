@@ -20,13 +20,6 @@ type Response struct {
 	Status  int       `json:"-"`
 }
 
-type Pagination struct {
-	Items    interface{} `json:"items"`
-	Total    int64       `json:"total"`
-	Page     int64       `json:"page"`
-	PageSize int64       `json:"page_size"`
-}
-
 func (r *Response) Error() string {
 	return r.Message
 }

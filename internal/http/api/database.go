@@ -5,19 +5,18 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"log-agent/internal/http/request"
 	"log-agent/internal/http/response"
+	"log-agent/internal/repo"
 	"log-agent/internal/util"
 )
 
 type Database struct {
-	Database *mongo.Database
+	UserRepo *repo.UserRepo
 }
 
 func (d *Database) Collections(c *fiber.Ctx) error {
-	items, err := d.Database.ListCollectionNames(c.Context(), bson.M{"name": bson.M{"$ne": "user"}})
+	items, err := d.UserRepo.Database.ListCollectionNames(c.Context(), bson.M{"name": bson.M{"$ne": "user"}})
 	if err != nil {
 		return response.NewSystemError(err)
 	}
@@ -62,49 +61,18 @@ func (d *Database) Query(c *fiber.Ctx) error {
 
 	// 统计数据
 	results := make([]map[string]interface{}, 0)
-	total, err := d.Database.Collection(param.Collection).CountDocuments(c.Context(), param.Query)
+	pagination, err := d.UserRepo.Pagination(c.Context(), &results, &repo.Builder{
+		Collection: param.Collection,
+		Query:      param.Query,
+		Page:       param.Page,
+		PageSize:   param.PageSize,
+		Order:      "datetime",
+		Sort:       sortValue,
+	})
 	if err != nil {
 		return response.NewSystemError(err)
 	}
 
 	// 没有数据、提前返回
-	if total == 0 {
-		return c.JSON(map[string]interface{}{
-			"items":     results,
-			"query":     param.Query,
-			"total":     total,
-			"page":      param.Page,
-			"page_size": param.PageSize,
-		})
-	}
-
-	// 分页查询数据
-	sort := bson.D{{"datetime", sortValue}}
-	findOptions := options.Find()
-	findOptions.SetSort(sort)
-	findOptions.SetLimit(param.PageSize)
-	findOptions.SetSkip(param.PageSize * (param.Page - 1))
-
-	var cursor *mongo.Cursor
-	if cursor, err = d.Database.Collection(param.Collection).Find(c.Context(), param.Query, findOptions); err != nil {
-		return response.NewSystemError(err)
-	}
-
-	defer cursor.Close(c.Context())
-
-	for cursor.Next(c.Context()) {
-		item := make(map[string]interface{})
-		if err := cursor.Decode(item); err != nil {
-			continue
-		}
-
-		results = append(results, item)
-	}
-
-	return c.JSON(map[string]interface{}{
-		"items":     results,
-		"total":     total,
-		"page":      param.Page,
-		"page_size": param.PageSize,
-	})
+	return c.JSON(pagination)
 }

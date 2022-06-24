@@ -30,7 +30,7 @@ func bootstrap(conf *config.Config) (cli.Commands, func()) {
 		Config:   conf,
 	}
 	apiDatabase := &api.Database{
-		Database: database,
+		UserRepo: userRepo,
 	}
 	guest := &api.Guest{
 		UserRepo: userRepo,

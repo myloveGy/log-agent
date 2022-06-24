@@ -4,10 +4,8 @@ import (
 	"errors"
 
 	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"log-agent/internal/config"
 	"log-agent/internal/http/request"
 	"log-agent/internal/http/response"
@@ -119,47 +117,18 @@ func (u *User) List(c *fiber.Ctx) error {
 	}
 
 	// 统计数据
-	total, err := u.UserRepo.Database.Collection("user").CountDocuments(c.Context(), param.Query)
+	results := make([]map[string]interface{}, 0)
+	pagination, err := u.UserRepo.Pagination(c.Context(), &results, &repo.Builder{
+		Collection: "user",
+		Query:      param.Query,
+		Page:       param.Page,
+		PageSize:   param.PageSize,
+		Sort:       1,
+		Order:      "created_at",
+	})
 	if err != nil {
 		return response.NewSystemError(err)
 	}
 
-	results := make([]map[string]interface{}, 0)
-	pagination := &response.Pagination{
-		Items:    results,
-		Page:     param.Page,
-		PageSize: param.PageSize,
-		Total:    total,
-	}
-
-	// 没有数据、提前返回
-	if total == 0 {
-		return c.JSON(pagination)
-	}
-
-	// 分页查询数据
-	sort := bson.D{{"created_at", 1}}
-	findOptions := options.Find()
-	findOptions.SetSort(sort)
-	findOptions.SetLimit(param.PageSize)
-	findOptions.SetSkip(param.PageSize * (param.Page - 1))
-
-	var cursor *mongo.Cursor
-	if cursor, err = u.UserRepo.Database.Collection("user").Find(c.Context(), param.Query, findOptions); err != nil {
-		return response.NewSystemError(err)
-	}
-
-	defer cursor.Close(c.Context())
-
-	for cursor.Next(c.Context()) {
-		item := make(map[string]interface{})
-		if err := cursor.Decode(item); err != nil {
-			continue
-		}
-
-		results = append(results, item)
-	}
-
-	pagination.Items = results
 	return c.JSON(pagination)
 }
