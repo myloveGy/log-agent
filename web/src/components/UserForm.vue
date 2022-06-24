@@ -36,12 +36,15 @@
 
 <script setup lang="ts">
 import {Lock, User} from '@element-plus/icons-vue'
-import {defineProps, withDefaults, ref, defineEmits} from 'vue'
+import {defineEmits, defineProps, ref, withDefaults} from 'vue'
 import {LoginUser, UserRequest} from '@/api'
 import {FormInstance} from 'element-plus'
-import {sync} from '@/utils'
+import {useSync} from '@/hooks'
 
-const loading = ref(false)
+const {loading, fetch} = useSync(async () => {
+  const data = await props.api(form.value)
+  emit('submit', data)
+}, false)
 
 const formRef = ref<FormInstance>()
 
@@ -74,11 +77,7 @@ const emit = defineEmits<{
 
 const submit = async () => {
   await formRef.value?.validate()
-  loading.value = true
-  return sync(async () => {
-    const data = await props.api(form.value)
-    emit('submit', data)
-  }).finally(() => loading.value = false)
+  await fetch()
 }
 
 </script>

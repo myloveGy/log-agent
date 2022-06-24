@@ -13,7 +13,9 @@
     <router-link v-for="item in items" :to="{name:item.name}" :key="item.name">
       <el-menu-item :index="item.path">
         <Icon :name="item.icon" :color="item.color"/>
-        <template #title>{{ item.name }}</template>
+        <template #title>
+          {{ item.name }}
+        </template>
       </el-menu-item>
     </router-link>
   </el-menu>

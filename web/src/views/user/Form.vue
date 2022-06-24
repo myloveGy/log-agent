@@ -22,10 +22,10 @@ import type {FormInstance} from 'element-plus'
 const formRef = ref<FormInstance>()
 const rules = {
   username: [
-    {required: true, message: '请输入索引文本', trigger: 'blur'},
+    {required: true, message: '请输入用户名称'},
   ],
   password: [
-    {required: true, message: '请输入JSON文档', trigger: 'blur'},
+    {required: true, message: '请输入用户密码'},
   ],
 }
 

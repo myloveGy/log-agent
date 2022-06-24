@@ -11,12 +11,12 @@
                   <el-input
                       style="width: 400px;margin-right:10px"
                       clearable
-                      @keyup.enter="query({page: 1})"
-                      @clear="query({page: 1})"
+                      @keyup.enter="fetch({page: 1})"
+                      @clear="fetch({page: 1})"
                       v-model="username"
                       placeholder="输入用户名称搜索,Enter"
                   />
-                  <el-button type="primary" @click="query({page: 1})">查询</el-button>
+                  <el-button type="primary" @click="fetch({page: 1})">查询</el-button>
                 </div>
               </div>
             </div>
@@ -50,8 +50,8 @@
           </el-table>
           <div v-if="data && data.total > 0" style="margin-top:10px;">
             <el-pagination
-                @size-change="(page_size) => query({page_size})"
-                @current-change="(page) => query({page})"
+                @size-change="(page_size) => fetch({page_size})"
+                @current-change="(page) => fetch({page})"
                 layout="total, sizes, prev, pager, next, jumper"
                 small="small"
                 :page-sizes="[10, 20, 30, 50, 100]"
@@ -73,26 +73,21 @@ import {onMounted, ref} from 'vue'
 import {PageQuery, Pagination, User, userCreateApi, userListApi, userUpdateApi} from '@/api'
 import {ElMessage} from 'element-plus'
 import Form from './Form.vue'
+import {useSync} from '@/hooks'
 
 const formRef = ref()
-
 const username = ref('')
-const loading = ref(true)
 const data = ref<Pagination<User>>({items: [], page: 1, page_size: 10, total: 0})
-const query = (request?: Partial<PageQuery>) => {
-  loading.value = true
+
+const {loading, fetch} = useSync<Partial<PageQuery>>(async (request?: Partial<PageQuery>) => {
   const {page, page_size} = data.value
   const query: { username?: string } = {}
   if (username.value) {
     query['username'] = username.value
   }
 
-  userListApi({page, query, page_size, ...request}).then(response => {
-    data.value = response
-  }).finally(() => {
-    loading.value = false
-  })
-}
+  data.value = await userListApi({page, query, page_size, ...request})
+})
 
 const create = () => {
   formRef.value?.open({
@@ -113,7 +108,7 @@ const update = (user: User) => {
 const updateStatus = (user: User, status: Pick<User, 'status'>) => {
   userUpdateApi({username: user.username, ...status}).then(() => {
     ElMessage.success('处理成功')
-    query()
+    fetch()
   })
 }
 
@@ -126,11 +121,11 @@ const submit = async (value: any, {action}: {action: string}) => {
     ElMessage.success('修改成功')
   }
 
-  query()
+  await fetch()
 }
 
 onMounted(() => {
-  query()
+  fetch()
 })
 </script>
 

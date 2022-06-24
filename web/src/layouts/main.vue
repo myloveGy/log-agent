@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-aside class="menubar">
-      <Menu :isCollapsed="isCollapsed"></Menu>
+      <Menu :isCollapsed="isCollapsed"/>
     </el-aside>
     <el-container>
 
@@ -47,7 +47,7 @@
 
 <script setup lang="ts">
 import Menu from '@/components/Menu.vue'
-import {Expand, Fold} from '@element-plus/icons-vue'
+import {Expand, Fold, User, FullScreen} from '@element-plus/icons-vue'
 import {useDark, useFullscreen, useToggle} from '@vueuse/core'
 import router from '@/router'
 import {computed, ref} from 'vue'

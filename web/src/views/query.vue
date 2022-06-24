@@ -13,7 +13,7 @@
                     :value="item"
                 />
               </el-select>
-              <el-input @keyup.enter="query({page: 1})" clearable v-model="search"
+              <el-input @keyup.enter="fetch({page: 1})" clearable v-model="search"
                         placeholder="输入查询条件,Enter"/>
               <el-date-picker
                   v-model="datetime"
@@ -24,7 +24,7 @@
                   value-format="YYYY-MM-DD HH:mm:ss"
                   :default-time="[new Date(2000, 2, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59)]"
               />
-              <el-button style="margin-left: 8px;width: 100px" type="primary" @click="query({page: 1})">查询</el-button>
+              <el-button style="margin-left: 8px;width: 100px" type="primary" @click="fetch({page: 1})">查询</el-button>
             </div>
           </template>
           <div v-if="data" class="header">
@@ -33,8 +33,8 @@
             </div>
             <div v-if="data && data.total > 1">
               <el-pagination
-                  @size-change="(size) => query({page_size:size})"
-                  @current-change="(page) => query({page})"
+                  @size-change="(size) => fetch({page_size:size})"
+                  @current-change="(page) => fetch({page})"
                   layout="total, sizes, prev, pager, next, jumper"
                   small="small"
                   :page-sizes="[10, 20, 50, 100, 200, 500]"
@@ -87,6 +87,7 @@ import {databaseQueryApi, databaseCollectionsApi} from '@/api'
 import {onMounted, ref} from 'vue'
 import {ElMessage} from 'element-plus'
 import {saveJson, sync} from '@/utils'
+import {useSync} from '@/hooks'
 
 const formatQuery = (query: string) => {
   if (query.substring(0, 1) === '{' && query.substring(-1, 1) === '}') {
@@ -106,7 +107,6 @@ const formatQuery = (query: string) => {
 }
 
 const collections = ref<string[]>([])
-const loading = ref<boolean>(false)
 const datetime = ref<string[]>([])
 const search = ref<string>('')
 const params = ref<{ collection: string, order: 'desc' | 'asc' }>({
@@ -116,8 +116,7 @@ const params = ref<{ collection: string, order: 'desc' | 'asc' }>({
 
 const data = ref<any>({items: [], total: 0, page_size: 10, page: 1})
 
-const query = (requestQuery: any = {}) => {
-  loading.value = true
+const {loading, fetch} = useSync<any>(async (requestQuery: any = {}) => {
   const {page, page_size} = data.value
   const request: any = {
     page,
@@ -141,14 +140,12 @@ const query = (requestQuery: any = {}) => {
     ElMessage.error('查询参数解析失败: ' + e)
   }
 
-  sync(async () => {
-    data.value = await databaseQueryApi(request)
-  }).finally(() => loading.value = false)
-}
+  data.value = await databaseQueryApi(request)
+}, false)
 
 const sortChange = ({order}: any) => {
   params.value.order = order === 'ascending' ? 'asc' : 'desc'
-  query()
+  fetch()
 }
 
 onMounted(() => {
@@ -156,8 +153,8 @@ onMounted(() => {
     const {items} = await databaseCollectionsApi()
     collections.value = items
     params.value.collection = items[0]
-    query()
-  }, false)
+    await fetch()
+  })
 })
 </script>
 
