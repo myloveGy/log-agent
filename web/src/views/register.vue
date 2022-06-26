@@ -1,31 +1,33 @@
 <template>
   <div class="body">
     <div class="container">
-      <div class="div-description">
-      </div>
-      <div class="div-form" :style="{transform: action === 'register' ? 'rotateY(180deg)' : 'none'}">
+      <div class="div-description"></div>
+      <div
+        class="div-form"
+        :style="{transform: action === 'register' ? 'rotateY(180deg)' : 'none'}"
+      >
         <user-register
-            title="日志收集系统"
-            description="请输入账号密码登录"
-            submit-text="登录"
-            :api="loginApi"
-            :class="{disappear: action === 'register', login: true}"
-            @submit="handler"
+          title="日志收集系统"
+          description="请输入账号密码登录"
+          submit-text="登录"
+          :api="loginApi"
+          :class="{disappear: action === 'register', login: true}"
+          @submit="handler"
         >
           <template #footer v-if="allow === 'Y'">
-            <span>没有帐号？<a @click="action='register'">去注册</a></span>
+            <span>没有帐号？<a @click="action = 'register'">去注册</a></span>
           </template>
         </user-register>
         <user-register
-            title="日志收集系统"
-            description="请输入账号密码注册"
-            submit-text="注册"
-            :api="registerApi"
-            :class="{disappear: action === 'login', register: true}"
-            @submit="handler"
+          title="日志收集系统"
+          description="请输入账号密码注册"
+          submit-text="注册"
+          :api="registerApi"
+          :class="{disappear: action === 'login', register: true}"
+          @submit="handler"
         >
           <template #footer>
-            <span>已有帐号？<a @click="action='login'">去登录</a></span>
+            <span>已有帐号？<a @click="action = 'login'">去登录</a></span>
           </template>
         </user-register>
       </div>
@@ -37,6 +39,7 @@
 import {useLogin} from '@/hooks'
 import UserRegister from '@/components/UserRegister.vue'
 import {loginApi, registerApi} from '@/api'
+
 const {action, handler, allow} = useLogin()
 </script>
 <style scoped>
@@ -46,7 +49,7 @@ const {action, handler, allow} = useLogin()
   align-items: center;
   height: 100vh;
   margin: 0;
-  background: url("@/assets/background.jpg") no-repeat fixed center;
+  background: url('@/assets/background.jpg') no-repeat fixed center;
 }
 
 .container {
@@ -54,7 +57,7 @@ const {action, handler, allow} = useLogin()
   display: flex;
   perspective: 1200px;
   transform-style: preserve-3d;
-  background: url("@/assets/background.jpg") no-repeat fixed center;
+  background: url('@/assets/background.jpg') no-repeat fixed center;
   background-size: cover;
   transform: translateX(0);
   transition: transform 0.6s ease-in-out;
@@ -90,7 +93,7 @@ const {action, handler, allow} = useLogin()
   height: 400px;
   position: absolute;
   left: 0;
-  transition: .5s;
+  transition: 0.5s;
   transform-origin: right;
 }
 
@@ -120,4 +123,3 @@ a:hover {
   color: #000;
 }
 </style>
-

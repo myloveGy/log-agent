@@ -1,16 +1,16 @@
 <template>
   <div class="body">
     <div
-        class="container"
-        :class="{ 'right-panel-active': action === 'register' }"
+      class="container"
+      :class="{'right-panel-active': action === 'register'}"
     >
       <div class="container-form container-signup">
         <user-form
-            title="日志收集系统"
-            description="请输入账号密码注册"
-            :api="registerApi"
-            submit-text="注册"
-            @submit="handler"
+          title="日志收集系统"
+          description="请输入账号密码注册"
+          :api="registerApi"
+          submit-text="注册"
+          @submit="handler"
         >
           <template #footer>
             <span>已有帐号？<a @click="action = 'login'">去登录</a></span>
@@ -19,11 +19,11 @@
       </div>
       <div class="container-form container-sign-in">
         <UserForm
-            title="日志收集系统"
-            description="请输入账号密码登录"
-            :api="loginApi"
-            submit-text="登录"
-            @submit="handler"
+          title="日志收集系统"
+          description="请输入账号密码登录"
+          :api="loginApi"
+          submit-text="登录"
+          @submit="handler"
         >
           <template #footer v-if="allow === 'Y'">
             <span>没有帐号？<a @click="action = 'register'">去注册</a></span>
@@ -40,9 +40,9 @@
           </div>
           <div class="overlay-panel overlay-right">
             <el-button
-                class="btn"
-                @click="action = 'register'"
-                v-if="allow === 'Y'"
+              class="btn"
+              @click="action = 'register'"
+              v-if="allow === 'Y'"
             >
               去注册
             </el-button>
@@ -56,7 +56,6 @@
 import {loginApi, registerApi} from '@/api'
 import UserForm from '@/components/UserForm.vue'
 import {useLogin} from '@/hooks'
-
 const {action, handler, allow} = useLogin()
 </script>
 <style scoped lang="scss">
@@ -68,7 +67,7 @@ $max-height: 400px;
 
 .body {
   align-items: center;
-  background: $white url("@/assets/background.jpg") no-repeat fixed center;
+  background: $white url('@/assets/background.jpg') no-repeat fixed center;
   width: 100%;
   background-size: cover;
   display: grid;
@@ -80,7 +79,7 @@ $max-height: 400px;
   background: $white;
   border-radius: $button-radius;
   box-shadow: 0 0.9rem 1.7rem rgba(0, 0, 0, 0.25),
-  0 0.7rem 0.7rem rgba(0, 0, 0, 0.22);
+    0 0.7rem 0.7rem rgba(0, 0, 0, 0.22);
   height: $max-height;
   max-width: $max-width;
   overflow: hidden;
@@ -135,7 +134,7 @@ $max-height: 400px;
 }
 
 .overlay {
-  background: $lightblue url("@/assets/background.jpg") no-repeat fixed center;
+  background: $lightblue url('@/assets/background.jpg') no-repeat fixed center;
   background-size: cover;
   height: 100%;
   left: -100%;

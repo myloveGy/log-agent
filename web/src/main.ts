@@ -1,15 +1,14 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import 'element-plus/dist/index.css'
-import ElementPlus from 'element-plus'
-import zhCn from 'element-plus/es/locale/lang/zh-cn'
-
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import 'element-plus/theme-chalk/src/dark/css-vars.scss'
-
+import {createApp} from 'vue'
+import App from './App.vue'
 import router from './router'
+
 const app = createApp(App)
-app.use(ElementPlus,{
+app.use(ElementPlus, {
   locale: zhCn,
 })
 app.use(router)
