@@ -21,7 +21,7 @@ type ErrorResponse struct {
 }
 
 func (e *ErrorResponse) Error() string {
-	arr := []string{}
+	var arr []string
 	for _, item := range e.Errors {
 		arr = append(arr, item.Translate)
 	}
@@ -43,7 +43,7 @@ func init() {
 	_ = zhTranslations.RegisterDefaultTranslations(validate, trans)
 }
 
-func Validate(data interface{}) *ErrorResponse {
+func Validate(data interface{}) error {
 	if err := validate.Struct(data); err != nil {
 		errorResponse := &ErrorResponse{
 			Errors: make([]*ValidationError, 0),
