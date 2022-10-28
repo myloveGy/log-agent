@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"strings"
 	"time"
 
 	"log-agent/internal/config"
@@ -51,7 +52,7 @@ func (g *Guest) Login(c *fiber.Ctx) error {
 	if err := g.UserRepo.Update(c.Context(), &model.User{
 		Id:            item.Id,
 		LastLoginTime: util.DateTime(),
-		LastLoginIp:   c.IP(),
+		LastLoginIp:   ClientIp(c),
 		UpdatedAt:     util.DateTime(),
 	}); err != nil {
 		return response.NewSystemError(err)
@@ -152,4 +153,23 @@ func (g *Guest) token(username string) (string, error) {
 	return util.GenerateToken(map[string]string{
 		"username": username,
 	}, g.Config.Jwt.Secret, time.Duration(g.Config.Jwt.ExpiresTime)*time.Second)
+}
+
+func ClientIp(c *fiber.Ctx) string {
+	clientIp := string(c.Request().Header.Peek("X-Forwarded-For"))
+	if index := strings.IndexByte(clientIp, ','); index >= 0 {
+		clientIp = clientIp[0:index]
+	}
+
+	clientIp = strings.TrimSpace(clientIp)
+	if len(clientIp) > 0 {
+		return clientIp
+	}
+
+	clientIp = strings.TrimSpace(string(c.Request().Header.Peek("X-Real-Ip")))
+	if len(clientIp) > 0 {
+		return clientIp
+	}
+
+	return c.IP()
 }
