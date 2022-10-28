@@ -157,13 +157,20 @@ func (g *Guest) token(username string) (string, error) {
 
 func ClientIp(c *fiber.Ctx) string {
 	clientIp := string(c.Request().Header.Peek("X-Forwarded-For"))
-	if index := strings.IndexByte(clientIp, ','); index >= 0 {
-		clientIp = clientIp[0:index]
-	}
+	if clientIp != "" {
+		ipSlice := strings.Split(clientIp, ",")
+		for _, v := range ipSlice {
+			v = strings.TrimSpace(v)
+			switch {
+			case v == "", v == "unknow", v == "127.0.0.1",
+				strings.HasPrefix(v, "10."),
+				strings.HasPrefix(v, "172"),
+				strings.HasPrefix(v, "192"):
+				continue
+			}
 
-	clientIp = strings.TrimSpace(clientIp)
-	if len(clientIp) > 0 {
-		return clientIp
+			return v
+		}
 	}
 
 	clientIp = strings.TrimSpace(string(c.Request().Header.Peek("X-Real-Ip")))
